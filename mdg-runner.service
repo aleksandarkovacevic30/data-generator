@@ -1,0 +1,15 @@
+[Unit]
+Description=MDG Runner (Always-on generator)
+After=network.target mdg.service
+
+[Service]
+User=mdg
+Group=mdg
+WorkingDirectory=/opt/mdg
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/opt/mdg/venv/bin/python /opt/mdg/runner.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

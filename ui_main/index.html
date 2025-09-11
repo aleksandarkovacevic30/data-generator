@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>MDG Domains</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;background:#f6f7f9;color:#222;margin:0}
+header{padding:14px 18px;background:#fff;border-bottom:1px solid #e5e7eb}
+main{max-width:900px;margin:0 auto;padding:18px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:12px;text-decoration:none;color:inherit}
+.card:hover{border-color:#0078d4;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.muted{color:#666}
+</style></head>
+<body>
+<header><h3>Master Data Generator — Domains</h3></header>
+<main>
+  <p id="hint" class="muted">Loading…</p>
+  <div id="grid" class="grid"></div>
+</main>
+<script>
+async function load(){
+  const r = await fetch('/status'); const s = await r.json();
+  const domains = s.domains_available || [];
+  document.getElementById('hint').textContent = `Found ${domains.length} domain(s)`;
+  const grid = document.getElementById('grid'); grid.innerHTML = '';
+  for (const d of domains){
+    const a = document.createElement('a'); a.className='card'; a.href = '/ui/'+d;
+    a.innerHTML = `<h4 style="margin:0 0 6px">${d}</h4><div class="muted">Open /ui/${d}</div>`;
+    grid.appendChild(a);
+  }
+}
+load();
+</script>
+</body></html>

@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Company Generator</title>
+<style>body{font-family:Segoe UI,Arial,sans-serif;background:#f6f7f9;color:#222;margin:0}
+header{padding:14px 18px;background:#fff;border-bottom:1px solid #e5e7eb}
+main{max-width:900px;margin:0 auto;padding:18px}
+button{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer}
+pre{white-space:pre-wrap;background:#111;color:#fff;padding:10px;border-radius:8px}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+</style></head>
+<body>
+<header><h3>Company (B2B) — Generate</h3></header>
+<main>
+  <div class="row">
+    <button onclick="gen()">Generate Now</button>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <label>Count <input id="count" type="number" value="10" style="width:80px"></label>
+  </div>
+  <h4>Status</h4>
+  <pre id="status"></pre>
+  <h4>Last Row</h4>
+  <pre id="last"></pre>
+<script>
+async function gen(){
+  const n = document.getElementById('count').value;
+  const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'});
+  document.getElementById('status').textContent = JSON.stringify(await r.json(), null, 2);
+  refresh();
+}
+async function start(){
+  await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company',running:true})});
+  refresh();
+}
+async function stop(){
+  await fetch('/stop',{method:'POST'});
+  refresh();
+}
+async function refresh(){
+  const r = await fetch('/status'); const s = await r.json();
+  document.getElementById('status').textContent = JSON.stringify(s, null, 2);
+  document.getElementById('last').textContent = JSON.stringify(s.last_row, null, 2);
+}
+refresh();
+</script>
+</main></body></html>

@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Beverage — Generator</title>
+<style>
+  body{font-family:Segoe UI,Arial,sans-serif;background:#f6f7f9;color:#222;margin:0}
+  header{padding:14px 18px;background:#fff;border-bottom:1px solid #e5e7eb}
+  main{max-width:1100px;margin:0 auto;padding:18px}
+  .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+  button{padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;background:#fff;cursor:pointer}
+  button.primary{background:#0078d4;color:#fff;border-color:#0078d4}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px}
+  .label{font-size:.9rem;color:#444;margin:8px 0 4px}
+  input[type="text"], input[type="password"], input[type="number"], select {
+    width:100%; padding:8px; border:1px solid #cfd6de; border-radius:8px; background:#fff;
+  }
+  .muted{color:#666}
+  pre{white-space:pre-wrap;background:#111;color:#fff;padding:10px;border-radius:8px;max-height:360px;overflow:auto}
+  .ok{color:#107c10}.err{color:#a80000}
+  .pill{display:inline-block;padding:3px 8px;border-radius:9999px;background:#eef2f7;border:1px solid #d5dbe3;font-size:.8rem}
+</style>
+</head>
+<body>
+<header><h3>Beverage — Generator</h3></header>
+<main>
+  <div class="row">
+    <button class="primary" onclick="gen()">Generate Now</button>
+    <button onclick="start()">Start</button>
+    <button onclick="stop()">Stop</button>
+    <label>Count <input id="count" type="number" value="10" min="1" style="width:90px"></label>
+    <span id="saveStatus" class="pill muted">Not saved</span>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h4>Domain Parameters</h4>
+      <div class="row"><label style="width:260px">Abbrev brand <input id="sc_brand" type="number" step="0.01" min="0" max="1"></label></div>
+      <div class="row"><label style="width:260px">Abbrev size <input id="sc_size" type="number" step="0.01" min="0" max="1"></label></div>
+      <div class="row"><label style="width:260px">Abbrev pack <input id="sc_pack" type="number" step="0.01" min="0" max="1"></label></div>
+      <div class="row"><label style="width:260px">Random noise <input id="sc_noise" type="number" step="0.01" min="0" max="1"></label></div>
+      <hr>
+      <div class="row">
+        <label>Interval (s) <input id="interval" type="number" step="0.1" min="0.2" style="width:120px"></label>
+        <label>Batch size <input id="batch" type="number" min="1" style="width:120px"></label>
+      </div>
+      <button onclick="saveConfig()" class="primary">Save configuration</button>
+    </div>
+
+    <div class="card">
+      <h4>CluedIn Sink (Beverage domain)</h4>
+      <div class="row"><label><input id="sink_enabled" type="checkbox"> Enabled</label></div>
+      <div class="label">Endpoint URL</div>
+      <input id="sink_url" type="text" placeholder="https://.../ingest/api/endpoint/UUID">
+      <div class="label">Bearer token</div>
+      <input id="sink_bearer" type="password" placeholder="********">
+      <div class="row">
+        <label>Mode
+          <select id="sink_mode" style="width:140px">
+            <option value="batch">batch</option><option value="record">record</option>
+          </select>
+        </label>
+        <label>Timeout (s) <input id="sink_timeout" type="number" step="0.5" min="1" style="width:120px"></label>
+        <label>Retries <input id="sink_retries" type="number" min="0" style="width:100px"></label>
+        <label>Trust env (proxies) <select id="sink_trust"><option value="false">false</option><option value="true">true</option></select></label>
+      </div>
+      <button onclick="saveSink()" class="primary">Save sink</button>
+      <span id="sinkStatus" class="pill muted">Not saved</span>
+    </div>
+  </div>
+
+  <h4>Status</h4>
+  <pre id="status"></pre>
+  <h4>Last Row</h4>
+  <pre id="last"></pre>
+</main>
+
+<script>
+async function load(){
+  await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'beverage'})});
+  const r = await fetch('/config/domain/beverage'); const d = await r.json();
+
+  setVal('interval', d.interval_seconds ?? 2);
+  setVal('batch', d.batch_size ?? 10);
+
+  const sc = d.scenarios || {};
+  setVal('sc_brand', sc.abbr_brand ?? 0.25);
+  setVal('sc_size',  sc.abbr_size ?? 0.25);
+  setVal('sc_pack',  sc.abbr_pack ?? 0.25);
+  setVal('sc_noise', sc.random_noise ?? 0.15);
+
+  const s = d.sink || {};
+  setChecked('sink_enabled', !!s.enabled);
+  setVal('sink_url', s.url || '');
+  setVal('sink_bearer', s.bearer || '');
+  setSelect('sink_mode', s.mode || 'batch');
+  setVal('sink_timeout', s.timeout ?? 10);
+  setVal('sink_retries', s.max_retries ?? 1);
+  setSelect('sink_trust', (s.trust_env ? 'true':'false'));
+
+  refresh();
+}
+function setVal(id,v){document.getElementById(id).value=v}
+function setChecked(id,v){document.getElementById(id).checked=!!v}
+function setSelect(id,v){document.getElementById(id).value=v}
+function get(id){return document.getElementById(id).value}
+
+async function saveConfig(){
+  const payload = {
+    domain:'beverage',
+    interval_seconds: parseFloat(get('interval')),
+    batch_size: parseInt(get('batch')),
+    scenarios: {
+      abbr_brand: parseFloat(get('sc_brand')),
+      abbr_size:  parseFloat(get('sc_size')),
+      abbr_pack:  parseFloat(get('sc_pack')),
+      random_noise: parseFloat(get('sc_noise')),
+    }
+  };
+  await fetch('/config/domain/beverage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  markSaved('saveStatus');
+}
+async function saveSink(){
+  const sink = {
+    enabled: document.getElementById('sink_enabled').checked,
+    url: get('sink_url'),
+    bearer: get('sink_bearer'),
+    mode: get('sink_mode'),
+    timeout: parseFloat(get('sink_timeout')),
+    max_retries: parseInt(get('sink_retries')),
+    trust_env: (get('sink_trust')==='true')
+  };
+  await fetch('/config/domain/beverage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'beverage', sink})});
+  markSaved('sinkStatus');
+}
+function markSaved(id){const el=document.getElementById(id); el.textContent='Saved ✓'; el.className='pill ok'; setTimeout(()=>{el.textContent='Not saved'; el.className='pill muted'}, 5000);}
+
+async function gen(){
+  const n = parseInt(get('count')||'10',10);
+  await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'beverage'})});
+  const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'}); 
+  document.getElementById('status').textContent = JSON.stringify(await r.json(), null, 2);
+  refresh();
+}
+async function start(){ await fetch('/config/domain/beverage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({running:true,domain:'beverage'})}); refresh(); }
+async function stop(){ await fetch('/stop',{method:'POST'}); refresh(); }
+
+async function refresh(){
+  const r = await fetch('/status'); const s = await r.json();
+  document.getElementById('status').textContent = JSON.stringify(s, null, 2);
+  document.getElementById('last').textContent = JSON.stringify(s.last_row, null, 2);
+}
+load();
+</script>
+</body>
+</html>
