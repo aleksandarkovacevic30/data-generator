@@ -5,12 +5,27 @@ from faker import Faker
 fake = Faker(); Faker.seed(1337); random.seed(1337)
 
 CITY_TO_COUNTRY = {
-    "Belgrade":"Serbia","New York":"United States","London":"United Kingdom",
-    "Paris":"France","Berlin":"Germany","Zurich":"Switzerland",
-    "San Francisco":"United States","Tokyo":"Japan","Sydney":"Australia","Toronto":"Canada"
+    "Belgrade":"Serbia","Belgrade":"Srbija","Belgrade":"Serbien","Belgrade":"RS",
+    "New York":"United States","New York":"USA","New York":"U.S.A",
+    "London":"United Kingdom","London":"U.K.","London":"UK",
+    "Paris":"France","Paris":"Francuska","Paris":"Frankreich","Paris":"FRA",
+    "Berlin":"Germany","Berlin":"Nemacka","Berlin":"DE",
+    "Zurich":"Switzerland","Zurich":"Svajcarska","Zurich":"CH",
+    "San Francisco":"United States","San Francisco":"USA",
+    "Tokyo":"Japan","Tokyo":"Nippon","Tokyo":"JP",
+    "Sydney":"Australia","Sydney":"AUS",
+    "Toronto":"Canada","Toronto":"CA",
+    "Vienna":"Austria","Vienna":"Österreich"
 }
-CITY_ABBREV = {"BGD":"Belgrade","NYC":"New York","LDN":"London","PAR":"Paris","BER":"Berlin",
-               "ZRH":"Zurich","SFO":"San Francisco","TKY":"Tokyo","SYD":"Sydney","TOR":"Toronto"}
+CITY_ABBREV = {"BGD":"Belgrade","NYC":"New York","NY":"New York","Big Apple":"New York",
+               "LDN":"London","PAR":"Paris","BER":"Berlin",
+               "ZRH":"Zurich","Cirih":"Zurich","Zürich":"Zurich",
+               "SFO":"San Francisco",
+               "TKY":"Tokyo","Tokio":"Tokyo",
+               "SYD":"Sydney","TOR":"Toronto",
+               "Beograd":"Belgrade","Belgrad":"Belgrade",
+               "Vienna":"Vienna","Wien":"Vienna","Беч":"Vienna"
+               }
 CITIES = list(CITY_TO_COUNTRY.keys())
 
 def _maybe(p: float) -> bool: return random.random() < float(p)
