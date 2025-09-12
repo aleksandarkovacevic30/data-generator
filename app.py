@@ -390,6 +390,50 @@ def stop():
     cfg = set_config({"running": False})
     return JSONResponse({"ok": True, "config": cfg, "note": "Runner will stop after current tick."})
 
+
+@app.post("/generate-download")
+@app.get("/generate-download")
+async def generate_download(request: Request):
+    """Generate a fresh batch and return it as a downloadable JSON file.
+       No sink sending. Records are sanitized (_issues/_source stripped)."""
+    cfg = get_config()
+    batch_size = int(cfg.get("batch_size", 10))
+
+    # Accept n/count from query or JSON body
+    try:
+        qp_n = request.query_params.get("n") or request.query_params.get("count")
+        if qp_n is not None:
+            batch_size = max(1, int(qp_n))
+    except Exception:
+        pass
+    try:
+        body = await request.json()
+        if isinstance(body, dict):
+            if "n" in body:
+                batch_size = max(1, int(body["n"]))
+            if "count" in body:
+                batch_size = max(1, int(body["count"]))
+    except Exception:
+        pass  # no JSON is fine
+
+    # Generate without sending
+    try:
+        batch = generate_batch(batch_size, cfg)
+    except Exception as e:
+        return JSONResponse({"ok": False, "error": f"generation failed: {e!r}"}, status_code=500)
+
+    # Sanitize and return as attachment
+    rows = [sanitize_for_send(r) for r in batch]
+    data = json.dumps(rows, ensure_ascii=False, indent=2)
+    domain = (cfg.get("domain") or "company").lower()
+    fname = f"mdg_{domain}_{int(time.time())}_N{len(rows)}.json"
+    return Response(
+        content=data,
+        media_type="application/json",
+        headers={"Content-Disposition": f'attachment; filename="{fname}"'}
+    )
+
+
 # ---------- Domain-scoped configuration ----------
 def _validate_domain_or_404(domain: str):
     d = (domain or "").strip().lower()

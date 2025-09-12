@@ -27,6 +27,7 @@
 <main>
   <div class="row">
     <button class="primary" onclick="gen()">Generate Now</button>
+    <button onclick="genDownload()">Generate &amp; Download</button>
     <button onclick="start()">Start</button>
     <button onclick="stop()">Stop</button>
     <label>Count <input id="count" type="number" value="10" min="1" style="width:90px"></label>
@@ -82,11 +83,9 @@
 
 <script>
 async function load(){
-  // set active domain
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
   const r = await fetch('/config/domain/company'); const d = await r.json();
 
-  // scenarios (shared)
   const sc = d.scenarios || {};
   setVal('sc_swap',   sc.swap_hq_city_country ?? 0.10);
   setVal('sc_abbrev', sc.abbrev_city ?? 0.10);
@@ -96,11 +95,9 @@ async function load(){
   setVal('sc_badweb', sc.invalid_website ?? 0.04);
   setVal('sc_badmail',sc.invalid_email ?? 0.04);
 
-  // common
   setVal('interval', d.interval_seconds ?? 2);
   setVal('batch', d.batch_size ?? 10);
 
-  // sink for this domain
   const s = d.sink || {};
   setChecked('sink_enabled', !!s.enabled);
   setVal('sink_url', s.url || '');
@@ -115,6 +112,7 @@ async function load(){
 function setVal(id,v){document.getElementById(id).value=v}
 function setChecked(id,v){document.getElementById(id).checked=!!v}
 function setSelect(id,v){document.getElementById(id).value=v}
+function get(id){return document.getElementById(id).value}
 
 async function saveConfig(){
   const payload = {
@@ -148,13 +146,26 @@ async function saveSink(){
   markSaved('sinkStatus');
 }
 function markSaved(id){const el=document.getElementById(id); el.textContent='Saved ✓'; el.className='pill ok'; setTimeout(()=>{el.textContent='Not saved'; el.className='pill muted'}, 5000);}
-function get(id){return document.getElementById(id).value}
 
 async function gen(){
   const n = parseInt(get('count')||'10',10);
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
   const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'}); 
   document.getElementById('status').textContent = JSON.stringify(await r.json(), null, 2);
+  refresh();
+}
+async function genDownload(){
+  const n = parseInt(get('count')||'10',10);
+  await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
+  const resp = await fetch('/generate-download?n='+encodeURIComponent(n), {method:'GET'});
+  const blob = await resp.blob();
+  let fname = 'mdg_company_'+Date.now()+'.json';
+  const cd = resp.headers.get('Content-Disposition') || '';
+  const m = cd.match(/filename="?([^"]+)"?/i);
+  if (m) fname = m[1];
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
   refresh();
 }
 async function start(){ await fetch('/config/domain/company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({running:true,domain:'company'})}); refresh(); }

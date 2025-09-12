@@ -27,6 +27,7 @@
 <main>
   <div class="row">
     <button class="primary" onclick="gen()">Generate Now</button>
+    <button onclick="genDownload()">Generate &amp; Download</button>
     <button onclick="start()">Start</button>
     <button onclick="stop()">Stop</button>
     <label>Count <input id="count" type="number" value="10" min="1" style="width:90px"></label>
@@ -141,6 +142,20 @@ async function gen(){
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'beverage'})});
   const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'}); 
   document.getElementById('status').textContent = JSON.stringify(await r.json(), null, 2);
+  refresh();
+}
+async function genDownload(){
+  const n = parseInt(get('count')||'10',10);
+  await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'beverage'})});
+  const resp = await fetch('/generate-download?n='+encodeURIComponent(n), {method:'GET'});
+  const blob = await resp.blob();
+  let fname = 'mdg_beverage_'+Date.now()+'.json';
+  const cd = resp.headers.get('Content-Disposition') || '';
+  const m = cd.match(/filename="?([^"]+)"?/i);
+  if (m) fname = m[1];
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
   refresh();
 }
 async function start(){ await fetch('/config/domain/beverage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({running:true,domain:'beverage'})}); refresh(); }
