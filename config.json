@@ -1,0 +1,57 @@
+{
+  "running": false,
+  "domain": "company",
+  "interval_seconds": 2,
+  "batch_size": 15,
+  "scenarios": {
+    "swap_hq_city_country": 0,
+    "abbrev_city": 0.5,
+    "add_whitespace": 0.1,
+    "random_typo_name": 0.3,
+    "missing_postal": 0.5,
+    "invalid_website": 0.32,
+    "invalid_email": 0.6
+  },
+  "company_params": {},
+  "beverage_params": {},
+  "sink": {
+    "enabled": false,
+    "url": "",
+    "bearer": "",
+    "mode": "batch",
+    "timeout": 10.0,
+    "max_retries": 1,
+    "trust_env": false,
+    "verify_tls": false
+  },
+  "sinks": {
+    "company": {
+      "enabled": true,
+      "url": "https://127.0.0.1.nip.io:443/upload/api/endpoint/D0F60E76-A50B-4D34-82BB-6EB0376EC8CE",
+      "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkFCMzZDREQ2M0U3N0Y1NzdENDFDOEQ1NkNGODIxOENFIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTc5Njg0NDAsImV4cCI6MTc2MDYwMzYzOSwiaXNzIjoiaHR0cHM6Ly8xMjcuMC4wLjEubmlwLmlvOjQ0My9hdXRoLyIsImF1ZCI6WyJTZXJ2ZXJBcGlGb3JVSSIsIlB1YmxpY0FwaSJdLCJjbGllbnRfaWQiOiJQdWJsaWNBcGlDbGllbnQiLCJyb2xlIjoiQVBJIiwiQ2xpZW50SWQiOiJmb29iYXIiLCJPcmdhbml6YXRpb25JZCI6IjM3YmJiZWY2LWU3NTYtNDA4NS1hOWZlLTIzNjQxZTQ5ODY1YiIsIk9yZ2FuaXphdGlvbk5hbWUiOiJmb29iYXIiLCJPcmdhbml6YXRpb25DbGllbnRSZWZlcmVuY2UiOiJmb29iYXIiLCJJZCI6ImM4YzZlZTBiLWZhM2UtNDAxOC04ZGM3LTNhYzFiM2RjZmNhNyIsImFwaSI6IjI5NWZhNzkyLWNjOWMtNGUzYi1iYjNjLTE1ZWFjMmEwNmNhMSIsImp0aSI6IjJDNDI3RjY0QkE3NjU0OUNCNDNEMEFCRTg5OEFDNjY3IiwiaWF0IjoxNzU3OTY4NDQwLCJzY29wZSI6WyJQdWJsaWNBcGkiLCJTZXJ2ZXJBcGlGb3JVSSJdfQ.WbzOpzGcmozavyYsSgGKzA57HqGNnYkEukcAlHn-TgrrqNjr0-rfGdIKjrgadWZsL9SBdyZIezL15gdVcchCMBqtTmHbjGtEbjsr4R1UX7ar78T9BvML98OwoFz9iETY2oCDQszq8ayrnmW8DcngMN5HwF75ck8Z0yKJlKQUs6_fh6hoRsqGRX-KeHsR8OMly3nMxEyY33jOW0hXaXwcGbCqfeWRf6LQMYPzRBy4GbvxdVwwyDQ_viEdDd-_pLkj6TNXGWjc2chvujt8QtIVDbsPQ5D38YjXvcTu4ZDAJLmJ6SQwuxgUAxuURS52qbIeCXU9FQaWEM6RPivQzLhvEA",
+      "mode": "batch",
+      "timeout": 10,
+      "max_retries": 1,
+      "trust_env": false,
+      "verify_tls": false
+    },
+    "beverage": {
+      "enabled": false,
+      "url": "",
+      "bearer": "",
+      "mode": "batch",
+      "timeout": 10.0,
+      "max_retries": 1,
+      "trust_env": false,
+      "verify_tls": false
+    }
+  },
+  "sources": {
+    "company": "gleif",
+    "beverage": "synthetic"
+  },
+  "gleif": {
+    "csv_path": "gleif.small.cityfiltered10k.csv",
+    "guess_websites": true
+  }
+}

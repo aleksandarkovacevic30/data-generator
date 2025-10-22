@@ -66,10 +66,11 @@ DEFAULT_SINK = {
     "enabled": False,
     "url": "",
     "bearer": "",
-    "mode": "batch",        # 'batch' | 'record'
+    "mode": "batch",
     "timeout": 10.0,
     "max_retries": 1,
-    "trust_env": False      # ignore HTTP(S)_PROXY by default
+    "trust_env": False,
+    "verify_tls": False     # <— NEW: set False to skip certificate verification
 }
 
 DEFAULT_CONFIG: Dict[str, Any] = {
@@ -88,6 +89,15 @@ DEFAULT_CONFIG: Dict[str, Any] = {
         "beverage": dict(DEFAULT_SINK),
     },
 }
+
+DEFAULT_CONFIG.update({
+    "sources": {"company": "synthetic", "beverage": "synthetic"},  # synthetic | gleif
+    "gleif": {
+        "csv_path": "",        # absolute path to a GLEIF CSV / CSV.GZ / ZIP (Golden Copy)
+        "guess_websites": False
+    }
+})
+
 
 def _safe_read_json(path: str, default: Any):
     try:
@@ -192,19 +202,29 @@ def build_curl(url: str, bearer: str, payload: Any) -> str:
 def _make_generator(domain: str, cfg: Dict[str, Any]):
     d = (domain or "company").strip().lower()
     if d == "company":
-        from generator.domains.company import CompanyGenerator
-        g = CompanyGenerator()
-        scen = cfg.get("scenarios") or {}
-        if scen:
-            try:
-                g.set_scenarios(scen)
-            except Exception as e:
-                log.warning("Company.set_scenarios failed: %s", e)
-        params = cfg.get("company_params") or {}
-        for k, v in params.items():
-            if hasattr(g, k):
-                setattr(g, k, v)
-        return g
+        src = ((cfg.get("sources") or {}).get("company") or "synthetic").lower()
+        if src == "gleif":
+            from generator.domains.company_gleif import CompanyFromGLEIFGenerator
+            csv_path = ((cfg.get("gleif") or {}).get("csv_path") or "").strip()
+            guess = bool((cfg.get("gleif") or {}).get("guess_websites", False))
+            g = CompanyFromGLEIFGenerator(csv_path=csv_path, guess_websites=guess)
+            # If you still want to apply your existing "issue scenarios" on top,
+            # do it *after* generation (in generate_batch wrapper) or let your sink/agent handle fixes.
+            return g
+        else:
+            from generator.domains.company import CompanyGenerator
+            g = CompanyGenerator()
+            scen = cfg.get("scenarios") or {}
+            if scen:
+                try:
+                   g.set_scenarios(scen)
+                except Exception:
+                    pass
+            params = cfg.get("company_params") or {}
+            for k, v in params.items():
+                if hasattr(g, k):
+                    setattr(g, k, v)
+            return g
 
     if d == "beverage":
         from generator.domains.beverage import BeverageGenerator
@@ -275,7 +295,13 @@ def sink_send(
     start = time.time()
     last_exc = None
     TIMEOUT = httpx.Timeout(connect=5.0, read=30.0, write=10.0, pool=5.0)
-    with httpx.Client(timeout=TIMEOUT, follow_redirects=True, trust_env=trust_env) as c:
+    verify_tls = bool(sink.get("verify_tls", True))
+    verify: Any
+    if not verify_tls:
+        verify = False
+    else:
+        verify = True    
+    with httpx.Client(timeout=TIMEOUT, follow_redirects=True, trust_env=trust_env, verify=verify) as c:
         for _ in range(1 + max_retries):
             try:
                 if mode == "batch":

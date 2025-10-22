@@ -129,3 +129,16 @@ That’s it. If anything fails, paste the exact command and the last 30 lines of
 # runner logs:
 python runner.py   # run in foreground to see tracebacks
 ```
+
+
+change to gleif
+
+curl -s -X POST http://127.0.0.1:8000/config \
+  -H 'Content-Type: application/json' \
+  -d '{
+        "sources": {"company": "gleif"},
+        "gleif": {
+          "csv_path": "/absolute/path/to/lei_golden_copy.csv.gz",
+          "guess_websites": true
+        }
+      }' | jq '.config.sources, .config.gleif'
