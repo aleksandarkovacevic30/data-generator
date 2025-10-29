@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Prompt Data Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    textarea, input[type=text], input[type=number] { width: 100%; box-sizing: border-box; }
+    label { font-weight: 600; display:block; margin-top: 12px; }
+    button { margin-top: 16px; padding: 8px 12px; }
+    .row { display:flex; gap:16px; }
+    .col { flex:1; }
+    .muted { color:#666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>Prompt-driven Generator</h1>
+  <p class="muted">Define the data spec and three prompts: canonical rows, hard-to-catch duplicates, and domain-typical data quality issues.</p>
+
+  <div>
+    <label>Spec prompt (what the data should look like)</label>
+    <textarea id="spec_prompt" rows="4" placeholder="e.g., Customer records with name, email, phone, address, VAT number..."></textarea>
+
+    <label>Schema hint (optional JSON or description)</label>
+    <textarea id="schema_hint" rows="2" placeholder='e.g., ["customer_id","name","email","phone","address","vat_number"] or a prose hint'></textarea>
+
+    <div class="row">
+      <div class="col">
+        <label>Generation prompt</label>
+        <textarea id="gen_prompt" rows="6" placeholder="Create canonical examples strictly following the spec."></textarea>
+      </div>
+      <div class="col">
+        <label>Duplicate prompt</label>
+        <textarea id="dupe_prompt" rows="6" placeholder="Create near-duplicates of the same entities with subtle variations that beat naive similarity."></textarea>
+      </div>
+      <div class="col">
+        <label>Data-quality prompt</label>
+        <textarea id="dq_prompt" rows="6" placeholder="Create rows with common data-quality issues for this domain."></textarea>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <label>Batch size</label>
+        <input id="batch_size" type="number" min="1" value="10"/>
+      </div>
+      <div class="col">
+        <label>Interval (sec)</label>
+        <input id="interval_seconds" type="number" min="1" value="1"/>
+      </div>
+      <div class="col">
+        <label>Max rows per variant call</label>
+        <input id="max_variant_rows" type="number" min="1" value="10"/>
+      </div>
+    </div>
+
+    <button id="save">Start / Update Config</button>
+    <button id="generate_now">Generate Now</button>
+    <pre id="resp" style="white-space:pre-wrap;"></pre>
+  </div>
+
+  <script>
+    async function post(url, body) {
+      const r = await fetch(url, {method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body)});
+      return await r.json();
+    }
+
+    document.getElementById("save").onclick = async () => {
+      const payload = {
+        running: true,
+        domain: "promptgen",
+        interval_seconds: Number(document.getElementById("interval_seconds").value),
+        batch_size: Number(document.getElementById("batch_size").value),
+        promptgen: {
+          spec_prompt: document.getElementById("spec_prompt").value,
+          schema_hint: document.getElementById("schema_hint").value,
+          gen_prompt: document.getElementById("gen_prompt").value,
+          dupe_prompt: document.getElementById("dupe_prompt").value,
+          dq_prompt: document.getElementById("dq_prompt").value,
+          max_variant_rows: Number(document.getElementById("max_variant_rows").value)
+        }
+      };
+      const resp = await post("/config", payload);
+      document.getElementById("resp").textContent = JSON.stringify(resp, null, 2);
+    };
+
+    document.getElementById("generate_now").onclick = async () => {
+      const r = await fetch("/generate-now?n=5", {method: "POST"});
+      const j = await r.json();
+      document.getElementById("resp").textContent = JSON.stringify(j, null, 2);
+    };
+  </script>
+</body>
+</html>

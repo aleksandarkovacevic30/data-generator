@@ -1,0 +1,34 @@
+# Path to your prepared GLEIF CSV (or Parquet). CSV assumed by default.
+gleif_input: ./data/gleif_entities.csv
+
+# Output folders
+out_batch: ./out/batch
+out_stream: ./out/stream
+
+# Volumes
+counts:
+  customers: 80        # will include guaranteed dupes
+  suppliers: 80        # will include EU-without-VAT and watchlist
+  products: 120        # some missing classification_code
+
+# Defect intensities (0.0..1.0)
+defects:
+  email_corrupt_rate: 0.25
+  phone_corrupt_rate: 0.25
+  address_noise_rate: 0.20
+  casing_shuffle_rate: 0.30
+  eu_missing_vat_rate: 0.45      # share of EU suppliers with missing VAT
+
+# Streaming
+stream:
+  interval_ms: 1200
+  total_events: 180
+  # ratios sum ~1.0
+  mix:
+    customer: 0.34
+    supplier: 0.33
+    product: 0.33
+  # force-inclusions for drama
+  force_watchlist_every_n: 40     # 1 risky supplier every N supplier events
+  force_near_dupe_every_n: 30     # 1 near-duplicate customer every N customer events
+  force_missing_class_every_n: 20 # 1 product missing classification every N product events

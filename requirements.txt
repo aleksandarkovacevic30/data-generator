@@ -6,3 +6,5 @@ python-dateutil>=2.9
 Faker>=19.13
 uvicorn>=0.30          # for local runs only; not used by PythonAnywhere
 pandas
+openai>=1.51.0
+pydantic>=2.8.0
