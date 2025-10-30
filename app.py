@@ -28,6 +28,9 @@ HEARTBEAT_PATH = "/tmp/mdg_runner.heartbeat"
 UI_MAIN     = os.path.join(BASE_DIR, "ui_main")
 UI_COMPANY  = os.path.join(BASE_DIR, "ui_company")
 UI_BEVERAGE = os.path.join(BASE_DIR, "ui_beverage")
+UI_PROMPT = os.path.join(BASE_DIR, "ui_prompt")
+UI_CUSTOMER = os.path.join(BASE_DIR, "ui_customer")
+UI_VENDOR = os.path.join(BASE_DIR, "ui_vendor")
 
 logging.basicConfig(level=logging.INFO)
 log = logging.getLogger("mdg.app")
@@ -640,6 +643,23 @@ def ui_company():
 @app.get("/ui/beverage/", include_in_schema=False)
 def ui_beverage():
     return _safe_file(os.path.join(UI_BEVERAGE, "index.html"), "ui_beverage/index.html")
+
+@app.get("/ui/prompt", include_in_schema=False)
+@app.get("/ui/prompt/", include_in_schema=False)
+def ui_prompt():
+    return _safe_file(os.path.join(UI_PROMPT, "index.html"), "ui_prompt/index.html")
+
+
+@app.get("/ui/customer", include_in_schema=False)
+@app.get("/ui/customer/", include_in_schema=False)
+def ui_customer():
+    return _safe_file(os.path.join(UI_CUSTOMER, "index.html"), "ui_customer/index.html")
+
+@app.get("/ui/vendor", include_in_schema=False)
+@app.get("/ui/vendor/", include_in_schema=False)
+def ui_customer():
+    return _safe_file(os.path.join(UI_VENDOR, "index.html"), "ui_vendor/index.html")
+
 
 @app.get("/", include_in_schema=False)
 def root():

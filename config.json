@@ -2,15 +2,15 @@
   "running": false,
   "domain": "company",
   "interval_seconds": 2,
-  "batch_size": 15,
+  "batch_size": 10,
   "scenarios": {
-    "swap_hq_city_country": 0,
-    "abbrev_city": 0.5,
+    "swap_hq_city_country": 0.7,
+    "abbrev_city": 0.8,
     "add_whitespace": 0.1,
-    "random_typo_name": 0.3,
-    "missing_postal": 0.5,
-    "invalid_website": 0.32,
-    "invalid_email": 0.6
+    "random_typo_name": 0.67,
+    "missing_postal": 0.95,
+    "invalid_website": 0.84,
+    "invalid_email": 0.84
   },
   "company_params": {},
   "beverage_params": {},
@@ -27,8 +27,8 @@
   "sinks": {
     "company": {
       "enabled": true,
-      "url": "https://127.0.0.1.nip.io:443/upload/api/endpoint/D0F60E76-A50B-4D34-82BB-6EB0376EC8CE",
-      "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkFCMzZDREQ2M0U3N0Y1NzdENDFDOEQ1NkNGODIxOENFIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NTc5Njg0NDAsImV4cCI6MTc2MDYwMzYzOSwiaXNzIjoiaHR0cHM6Ly8xMjcuMC4wLjEubmlwLmlvOjQ0My9hdXRoLyIsImF1ZCI6WyJTZXJ2ZXJBcGlGb3JVSSIsIlB1YmxpY0FwaSJdLCJjbGllbnRfaWQiOiJQdWJsaWNBcGlDbGllbnQiLCJyb2xlIjoiQVBJIiwiQ2xpZW50SWQiOiJmb29iYXIiLCJPcmdhbml6YXRpb25JZCI6IjM3YmJiZWY2LWU3NTYtNDA4NS1hOWZlLTIzNjQxZTQ5ODY1YiIsIk9yZ2FuaXphdGlvbk5hbWUiOiJmb29iYXIiLCJPcmdhbml6YXRpb25DbGllbnRSZWZlcmVuY2UiOiJmb29iYXIiLCJJZCI6ImM4YzZlZTBiLWZhM2UtNDAxOC04ZGM3LTNhYzFiM2RjZmNhNyIsImFwaSI6IjI5NWZhNzkyLWNjOWMtNGUzYi1iYjNjLTE1ZWFjMmEwNmNhMSIsImp0aSI6IjJDNDI3RjY0QkE3NjU0OUNCNDNEMEFCRTg5OEFDNjY3IiwiaWF0IjoxNzU3OTY4NDQwLCJzY29wZSI6WyJQdWJsaWNBcGkiLCJTZXJ2ZXJBcGlGb3JVSSJdfQ.WbzOpzGcmozavyYsSgGKzA57HqGNnYkEukcAlHn-TgrrqNjr0-rfGdIKjrgadWZsL9SBdyZIezL15gdVcchCMBqtTmHbjGtEbjsr4R1UX7ar78T9BvML98OwoFz9iETY2oCDQszq8ayrnmW8DcngMN5HwF75ck8Z0yKJlKQUs6_fh6hoRsqGRX-KeHsR8OMly3nMxEyY33jOW0hXaXwcGbCqfeWRf6LQMYPzRBy4GbvxdVwwyDQ_viEdDd-_pLkj6TNXGWjc2chvujt8QtIVDbsPQ5D38YjXvcTu4ZDAJLmJ6SQwuxgUAxuURS52qbIeCXU9FQaWEM6RPivQzLhvEA",
+      "url": "https://app.demo-pwc-0005.cluedin-test.online/ingest/api/endpoint/0AC09DD3-BECF-4495-952F-C14448BA8B77",
+      "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjcwNDBFMTVBNjNGNTYwMkI0RjJBNjMwMzMzRUMzQzFDODFCOUEzOTlSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6ImNFRGhXbVAxWUN0UEttTURNLXc4SElHNW81ayJ9.eyJuYmYiOjE3NjE3NTY3MzQsImV4cCI6MTc2NDM5MTkzMywiaXNzIjoiaHR0cHM6Ly9hcHAuZGVtby1wd2MtMDAwNS5jbHVlZGluLXRlc3Qub25saW5lL2F1dGgvIiwiYXVkIjpbIlNlcnZlckFwaUZvclVJIiwiUHVibGljQXBpIl0sImNsaWVudF9pZCI6IlB1YmxpY0FwaUNsaWVudCIsInJvbGUiOiJBUEkiLCJDbGllbnRJZCI6ImZvb2JhciIsIk9yZ2FuaXphdGlvbklkIjoiNjMxN2UzYzMtNTQ4OS00OTM1LTkzYzYtNzczM2ZjZmZmMWUxIiwiT3JnYW5pemF0aW9uTmFtZSI6ImZvb2JhciIsIk9yZ2FuaXphdGlvbkNsaWVudFJlZmVyZW5jZSI6ImZvb2JhciIsIklkIjoiZmVkNjA2ZTktODk4YS00Y2NlLWI4ZTEtZWU4NGE5ZWI2YmUwIiwiYXBpIjoiMjk1ZmE3OTItY2M5Yy00ZTNiLWJiM2MtMTVlYWMyYTA2Y2ExIiwianRpIjoiQzVFOTRGNThCRjI1RDVBN0EyQzE3MDhEM0Q4Q0EzRTkiLCJpYXQiOjE3NjE3NTY3MzQsInNjb3BlIjpbIlB1YmxpY0FwaSIsIlNlcnZlckFwaUZvclVJIl19.jBQ-7dDXDG5an6NuKOX2BAmuuBqSAw-udld0beoDvrRml4JZDOKeo8fHu5QBdMvr-Z62XA1CutTwzxIXzbaYAKKqM8I8Tp1GfjvmWrhoTpGu28CG2TXfudH2sK8y6bH5021LXxtmwpaOGxjv6WYwK_B7LUcZFM_QXquqRHJlAYo_AGA8mv8a2a2YoDj2qpTBrHxsBkDukh1xNqIfvLAbVggBFMuEkAxS-t8jb93D-cif7q79OFNN_pOr6IufFwkaDCufapU3E1XyRdq3aQh8bC5EQFs0JZqyWNBt_X7pb5lZlz2Jzop8PaCmgnCND9HYpmVQo5xtSBs1a8IIxQ04Tw",
       "mode": "batch",
       "timeout": 10,
       "max_retries": 1,
@@ -52,6 +52,6 @@
   },
   "gleif": {
     "csv_path": "gleif.small.cityfiltered10k.csv",
-    "guess_websites": true
+    "guess_websites": false
   }
 }

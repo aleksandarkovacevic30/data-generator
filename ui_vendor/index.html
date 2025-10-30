@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Vendor Generator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    textarea, input[type=text], input[type=number] { width: 100%; box-sizing: border-box; }
+    label { font-weight: 600; display:block; margin-top: 12px; }
+    button { margin-top: 16px; padding: 8px 12px; }
+    .row { display:flex; gap:16px; }
+    .col { flex:1; }
+    .muted { color:#666; font-size: 12px; }
+    pre { background: #f8fafc; border: 1px solid #e5e7eb; padding: 12px; border-radius: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Vendor (derived)</h1>
+  <p class="muted">
+    Generates <strong>vendor</strong> records derived from your base <em>company/GLEIF</em> generator via a mapping function.
+    No prompts — uses the base domain’s generation.
+  </p>
+
+  <div>
+    <div class="row">
+      <div class="col">
+        <label>Batch size</label>
+        <input id="batch_size" type="number" min="1" value="10"/>
+      </div>
+      <div class="col">
+        <label>Interval (sec)</label>
+        <input id="interval_seconds" type="number" min="1" value="1"/>
+      </div>
+    </div>
+
+    <button id="save">Start / Update Config</button>
+    <button id="generate_now">Generate Now</button>
+    <pre id="resp" style="white-space:pre-wrap;"></pre>
+  </div>
+
+  <script>
+    async function post(url, body) {
+      const r = await fetch(url, {method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify(body)});
+      try { return await r.json(); } catch { return { ok:false, raw: await r.text() }; }
+    }
+
+    document.getElementById("save").onclick = async () => {
+      const payload = {
+        running: true,
+        domain: "vendor",
+        interval_seconds: Number(document.getElementById("interval_seconds").value),
+        batch_size: Number(document.getElementById("batch_size").value)
+      };
+      const resp = await post("/config", payload);
+      document.getElementById("resp").textContent = JSON.stringify(resp, null, 2);
+    };
+
+    document.getElementById("generate_now").onclick = async () => {
+      const r = await fetch("/generate-now?n=5", {method: "POST"});
+      try {
+        const j = await r.json();
+        document.getElementById("resp").textContent = JSON.stringify(j, null, 2);
+      } catch (e) {
+        document.getElementById("resp").textContent = "Non-JSON response:\n" + await r.text();
+      }
+    };
+  </script>
+</body>
+</html>
