@@ -72,13 +72,26 @@
     </div>
   </div>
 
-  <h4>Status</h4>
-  <pre id="status"></pre>
+  <h4>Console</h4>
+  <div class="row" style="margin-bottom:4px">
+    <button onclick="clearLog()" style="font-size:.8rem;padding:4px 8px">Clear</button>
+    <span class="muted" style="font-size:.8rem">Events appended newest-first</span>
+  </div>
+  <pre id="console-log" style="min-height:120px"></pre>
   <h4>Last Row</h4>
   <pre id="last"></pre>
 </main>
 
 <script>
+function logEvent(label, data, isErr){
+  const el = document.getElementById('console-log');
+  const ts = new Date().toISOString().replace('T',' ').slice(0,23);
+  const color = isErr ? '#f87171' : '#86efac';
+  const line = `<span style="color:${color}">[${ts}] ${label}</span>\n${JSON.stringify(data,null,2)}\n\n`;
+  el.innerHTML = line + el.innerHTML;
+}
+function clearLog(){ document.getElementById('console-log').innerHTML = ''; }
+
 async function load(){
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
   const r = await fetch('/config/domain/company'); const d = await r.json();
@@ -104,7 +117,7 @@ async function load(){
   setVal('sink_retries', s.max_retries ?? 1);
   setSelect('sink_trust', (s.trust_env ? 'true':'false'));
 
-  refresh();
+  refreshLast();
 }
 function setVal(id,v){document.getElementById(id).value=v}
 function setChecked(id,v){document.getElementById(id).checked=!!v}
@@ -145,33 +158,43 @@ async function saveSink(){
 function markSaved(id){const el=document.getElementById(id); el.textContent='Saved ✓'; el.className='pill ok'; setTimeout(()=>{el.textContent='Not saved'; el.className='pill muted'}, 5000);}
 
 async function gen(){
-  const n = parseInt(get('count')||'10',10);
+  const n = parseInt(get('batch')||'10',10);
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
-  const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'}); 
-  document.getElementById('status').textContent = JSON.stringify(await r.json(), null, 2);
-  refresh();
+  try {
+    const r = await fetch('/generate-now?n='+encodeURIComponent(n), {method:'POST'});
+    const data = await r.json();
+    const isErr = !r.ok;
+    logEvent('Generate & Stream — ' + n + ' records', data, isErr);
+    refreshLast();
+  } catch(e) {
+    logEvent('Generate & Stream — ERROR', {error: e.message}, true);
+  }
 }
 async function genDownload(){
-  const n = parseInt(get('count')||'10',10);
+  const n = parseInt(get('batch')||'10',10);
   await fetch('/config',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({domain:'company'})});
-  const resp = await fetch('/generate-download?n='+encodeURIComponent(n), {method:'GET'});
-  const blob = await resp.blob();
-  let fname = 'mdg_company_'+Date.now()+'.json';
-  const cd = resp.headers.get('Content-Disposition') || '';
-  const m = cd.match(/filename="?([^"]+)"?/i);
-  if (m) fname = m[1];
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-  refresh();
+  try {
+    const resp = await fetch('/generate-download?n='+encodeURIComponent(n), {method:'GET'});
+    const blob = await resp.blob();
+    let fname = 'mdg_company_'+Date.now()+'.json';
+    const cd = resp.headers.get('Content-Disposition') || '';
+    const m = cd.match(/filename="?([^"]+)"?/i);
+    if (m) fname = m[1];
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = fname; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    logEvent('Download — ' + n + ' records saved as ' + fname, {ok: true}, false);
+    refreshLast();
+  } catch(e) {
+    logEvent('Download — ERROR', {error: e.message}, true);
+  }
 }
-async function start(){ await fetch('/config/domain/company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({running:true,domain:'company'})}); refresh(); }
-async function stop(){ await fetch('/stop',{method:'POST'}); refresh(); }
+async function start(){ await fetch('/config/domain/company',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({running:true,domain:'company'})}); refreshLast(); }
+async function stop(){ await fetch('/stop',{method:'POST'}); refreshLast(); }
 
-async function refresh(){
+async function refreshLast(){
   const r = await fetch('/status'); const s = await r.json();
-  document.getElementById('status').textContent = JSON.stringify(s, null, 2);
-  document.getElementById('last').textContent = JSON.stringify(s.last_row, null, 2);
+  document.getElementById('last').textContent = JSON.stringify(s.last_row ?? s, null, 2);
 }
 load();
 </script>

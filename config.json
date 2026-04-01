@@ -27,8 +27,8 @@
   "sinks": {
     "company": {
       "enabled": true,
-      "url": "https://app.demo-pwc-0005.cluedin-test.online/ingest/api/endpoint/0AC09DD3-BECF-4495-952F-C14448BA8B77",
-      "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjcwNDBFMTVBNjNGNTYwMkI0RjJBNjMwMzMzRUMzQzFDODFCOUEzOTlSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6ImNFRGhXbVAxWUN0UEttTURNLXc4SElHNW81ayJ9.eyJuYmYiOjE3NjE3NTY3MzQsImV4cCI6MTc2NDM5MTkzMywiaXNzIjoiaHR0cHM6Ly9hcHAuZGVtby1wd2MtMDAwNS5jbHVlZGluLXRlc3Qub25saW5lL2F1dGgvIiwiYXVkIjpbIlNlcnZlckFwaUZvclVJIiwiUHVibGljQXBpIl0sImNsaWVudF9pZCI6IlB1YmxpY0FwaUNsaWVudCIsInJvbGUiOiJBUEkiLCJDbGllbnRJZCI6ImZvb2JhciIsIk9yZ2FuaXphdGlvbklkIjoiNjMxN2UzYzMtNTQ4OS00OTM1LTkzYzYtNzczM2ZjZmZmMWUxIiwiT3JnYW5pemF0aW9uTmFtZSI6ImZvb2JhciIsIk9yZ2FuaXphdGlvbkNsaWVudFJlZmVyZW5jZSI6ImZvb2JhciIsIklkIjoiZmVkNjA2ZTktODk4YS00Y2NlLWI4ZTEtZWU4NGE5ZWI2YmUwIiwiYXBpIjoiMjk1ZmE3OTItY2M5Yy00ZTNiLWJiM2MtMTVlYWMyYTA2Y2ExIiwianRpIjoiQzVFOTRGNThCRjI1RDVBN0EyQzE3MDhEM0Q4Q0EzRTkiLCJpYXQiOjE3NjE3NTY3MzQsInNjb3BlIjpbIlB1YmxpY0FwaSIsIlNlcnZlckFwaUZvclVJIl19.jBQ-7dDXDG5an6NuKOX2BAmuuBqSAw-udld0beoDvrRml4JZDOKeo8fHu5QBdMvr-Z62XA1CutTwzxIXzbaYAKKqM8I8Tp1GfjvmWrhoTpGu28CG2TXfudH2sK8y6bH5021LXxtmwpaOGxjv6WYwK_B7LUcZFM_QXquqRHJlAYo_AGA8mv8a2a2YoDj2qpTBrHxsBkDukh1xNqIfvLAbVggBFMuEkAxS-t8jb93D-cif7q79OFNN_pOr6IufFwkaDCufapU3E1XyRdq3aQh8bC5EQFs0JZqyWNBt_X7pb5lZlz2Jzop8PaCmgnCND9HYpmVQo5xtSBs1a8IIxQ04Tw",
+      "url": "https://app.weu.saas.cluedin.com/ingest/api/endpoint/99D35EC1-6514-477F-8566-4174D258FF87",
+      "bearer": "eyJhbGciOiJSUzI1NiIsImtpZCI6IkFGM0Q4NkY2Mzg3NDNGRTU1NEJENkI4MTU4MjY1MjA2Qzc5QUFGODJSUzI1NiIsInR5cCI6ImF0K2p3dCIsIng1dCI6InJ6Mkc5amgwUC1WVXZXdUJXQ1pTQnNlYXI0SSJ9.eyJuYmYiOjE3NjgyMjI1MTYsImV4cCI6MTc5OTgwMTcxNSwiaXNzIjoiaHR0cHM6Ly9hcHAud2V1LnNhYXMuY2x1ZWRpbi5jb20vYXV0aC8iLCJhdWQiOlsiU2VydmVyQXBpRm9yVUkiLCJQdWJsaWNBcGkiXSwiY2xpZW50X2lkIjoiUHVibGljQXBpQ2xpZW50Iiwicm9sZSI6IkFQSSIsIkNsaWVudElkIjoicHJlc2FsZXMiLCJPcmdhbml6YXRpb25JZCI6IjVmNjk5MmEyLWRlZjAtNGUwYy05YzBmLWQ2YjFhOWNmNDEyNyIsIk9yZ2FuaXphdGlvbk5hbWUiOiJwcmVzYWxlcyIsIk9yZ2FuaXphdGlvbkNsaWVudFJlZmVyZW5jZSI6InByZXNhbGVzIiwiSWQiOiI1ZDZmM2E4ZC01ZTVhLTQ2ZTQtOGUyMS04YTE3ZmJmMDM3NzEiLCJhcGkiOiIyOTVmYTc5Mi1jYzljLTRlM2ItYmIzYy0xNWVhYzJhMDZjYTEiLCJqdGkiOiIyRkIxRTBBM0IxMjdENDMxMDNBRjhENzdFNjVDRDY3MSIsImlhdCI6MTc2ODIyMjUxNiwic2NvcGUiOlsiUHVibGljQXBpIiwiU2VydmVyQXBpRm9yVUkiXX0.X1lhej7K9RimGKxIEmMO5qQy0ZQJoSzNRIKoneb_RjSOF9MHI1lpTRPNrifMlStg_ceBjngCSz6scCsCzF85giJb0rhxNwin-oT2NJq1Au3XU9GtlcQLCbH-TMPKxK8WPzDb8uGhw_pJyY5DBk8DIBrKAJD9JxFSP0DS8jagKOXRKdVJqdo6eq2aBmSDr5rlfQ0LErwoHZAiGi3h0dB4_PeCvgvO3huOW8nnZszhsy0n-C2tvOh5C9rN7sRU0ai9KlGkhmz4czkbDk4gvnFJViObRPL6U7JsxzyXjS-VAp6RNEwNVn0_ZEa1SUa6DgrOhRWoeH4e86qEl9RSx_nBnA",
       "mode": "batch",
       "timeout": 10,
       "max_retries": 1,
@@ -36,6 +36,36 @@
       "verify_tls": false
     },
     "beverage": {
+      "enabled": false,
+      "url": "",
+      "bearer": "",
+      "mode": "batch",
+      "timeout": 10.0,
+      "max_retries": 1,
+      "trust_env": false,
+      "verify_tls": false
+    },
+    "customer": {
+      "enabled": false,
+      "url": "",
+      "bearer": "",
+      "mode": "batch",
+      "timeout": 10.0,
+      "max_retries": 1,
+      "trust_env": false,
+      "verify_tls": false
+    },
+    "promptgen": {
+      "enabled": false,
+      "url": "",
+      "bearer": "",
+      "mode": "batch",
+      "timeout": 10.0,
+      "max_retries": 1,
+      "trust_env": false,
+      "verify_tls": false
+    },
+    "vendor": {
       "enabled": false,
       "url": "",
       "bearer": "",
