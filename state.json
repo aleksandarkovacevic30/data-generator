@@ -1,0 +1,29 @@
+{
+  "last_send_ok": false,
+  "last_send_error": "simulated connection refused",
+  "last_send_status": 0,
+  "last_send_curl": "curl -i -X POST 'http://fake.test/ingest' -H 'Authorization: Bearer tok'",
+  "last_row": {
+    "domain": "company",
+    "company_id": "COMP_DB1CF87131",
+    "legal_name": "Stewart Inc",
+    "trade_name": "Stewart Inc",
+    "hq_city": "Belgrad",
+    "hq_country": "Serbia",
+    "address_line": "8408 Ronald Rest",
+    "postal_code": "94475",
+    "website": "https://stewartinc.com",
+    "email": "info@stewartinc.com",
+    "phone": "5647207561",
+    "registration_number": "8AA26137-52C",
+    "industry": "Tourist information centre manager",
+    "employees": 772,
+    "annual_revenue_usd": 109397123.6,
+    "_issues": [
+      "abbrev_city"
+    ],
+    "_source": "generator:company",
+    "_ts": "2026-04-01T20:31:54.961997+00:00"
+  },
+  "last_updated_utc": "2026-04-01T20:31:54.987158+00:00"
+}

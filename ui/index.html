@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Data Generators</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 20px; }
+    h1 { margin-bottom: 8px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+    .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 14px; text-decoration: none; color: inherit; display: block; }
+    .card:hover { border-color: #9ca3af; }
+    .name { font-weight: 700; margin-bottom: 6px; }
+    .desc { color: #555; font-size: 14px; }
+    .err  { color: #a80000; }
+  </style>
+</head>
+<body>
+  <h1>Generators</h1>
+  <p>Select a generator to configure and run.</p>
+  <div class="grid" id="grid">Loading…</div>
+
+  <script>
+    async function load() {
+      const grid = document.getElementById('grid');
+      try {
+        const r = await fetch('/domains');
+        const domains = await r.json();
+        if (!domains.length) {
+          grid.innerHTML = '<p class="err">No domains discovered.</p>';
+          return;
+        }
+        grid.innerHTML = domains.map(d => `
+          <a class="card" href="/ui/${d.name}/">
+            <div class="name">${d.display_name}</div>
+            <div class="desc">${d.description}</div>
+          </a>
+        `).join('');
+      } catch (e) {
+        grid.innerHTML = '<p class="err">Failed to load domains: ' + e + '</p>';
+      }
+    }
+    load();
+  </script>
+</body>
+</html>

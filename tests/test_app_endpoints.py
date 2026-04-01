@@ -61,22 +61,29 @@ def test_switch_domains_and_generate_company_then_beverage(client):
 
 def test_sink_failure_sets_curl_on_status(client, monkeypatch):
     """
-    We don't call the network. Instead, stub the sink.send() to simulate a failure that
-    populates the send_state fields (last_send_ok, last_send_error, last_send_curl).
+    Simulate a sink failure without touching the real network.
+    Patches app.sink_send so the /generate-now endpoint sees a failed send,
+    then verifies /status reflects last_send_ok=False with a cURL hint.
     """
-    def fake_send(batch, state):
-        state.last_send_ok = False
-        state.last_send_error = "HTTP 403 Forbidden: token invalid"
-        state.last_send_curl = "curl -X POST 'https://example.test/ingest' -H 'Authorization: Bearer ***' -H 'Content-Type: application/json' -d '[]'"
+    # Configure active domain first (before patching)
+    client.post("/config", json={"domain": "company"})
 
-    # Patch the actual sink used by the app
-    monkeypatch.setattr(backend.producer.sink, "send", fake_send, raising=True)
+    def _fake_sink_send(batch, cfg, *, domain=None, force=False):
+        backend.patch_state({
+            "last_send_ok":     False,
+            "last_send_error":  "simulated connection refused",
+            "last_send_status": 0,
+            "last_send_curl":   "curl -i -X POST 'http://fake.test/ingest' -H 'Authorization: Bearer tok'",
+            "last_row":         batch[-1] if batch else None,
+        })
+        return {"ok": False, "error": "simulated connection refused"}
 
-    # Trigger a send via generate-now
+    monkeypatch.setattr(backend, "sink_send", _fake_sink_send)
+
     r = client.post("/generate-now", json={})
     assert r.status_code == 200
 
     st = client.get("/status").json()
     assert st["last_send_ok"] is False
-    assert "Forbidden" in (st["last_send_error"] or "")
-    assert "curl -X POST" in (st["last_send_curl"] or "")
+    assert "refused" in (st["last_send_error"] or "")
+    assert "curl" in (st["last_send_curl"] or "")
